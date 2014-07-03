@@ -1,0 +1,1 @@
+../flushdns.sh

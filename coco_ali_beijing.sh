@@ -1,0 +1,1 @@
+../coco_ali_beijing.sh
