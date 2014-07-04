@@ -46,7 +46,9 @@ case $1 in
         test_if_staged
         branch
         remotes|while read remote; do
+            cfont -yellow
             echo "git push $remote $branch_name..."
+            cfont -reset
             git push $remote $branch_name && pass=1
             test_if_pass "push $remote $branch_name" "when pushing $branch_name to $remote"
         done
@@ -59,7 +61,9 @@ case $1 in
         if [ "$2" != "" ]; then
             remote=$2
         fi
+        cfont -yellow
         echo "pulling $branch_name from $remote..."
+        cfont -reset
         git pull $remote $branch_name && pass=1
         test_if_pass "pull $remote $branch_name" "when pulling $branch_name from $remote"
         exit 0
