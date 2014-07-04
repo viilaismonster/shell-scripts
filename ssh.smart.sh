@@ -25,7 +25,7 @@ function do_bench() {
     cfont -reset
     import timer
     # for i in $(seq 1 $do_bench_repeats); do
-    for (( i=0; i<$do_bench_repeats; i++ )); do
+    for (( i=0; i<do_bench_repeats; i++ )); do
         timer_start
         echo -n "test $i/$do_bench_repeats..."
         cost="timeout"
