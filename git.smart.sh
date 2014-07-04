@@ -11,7 +11,7 @@ function remotes() {
 
 function branch() {
     branch_name=`git branch -a|grep '^*'|awk '{print $2}'` && pass=1
-    test_if_pass "get branch $branch_name"
+    test_if_pass "get branch [$branch_name]"
 }
 
 function test_if_staged() {
@@ -29,6 +29,7 @@ case $1 in
         test_if_staged
         branch
         remotes|while read remote; do
+            echo "pushing to $remote"
             git push $remote $branch_name && pass=1
             test_if_pass "push $branch_name to $remote"
         done
