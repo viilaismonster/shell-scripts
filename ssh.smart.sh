@@ -21,7 +21,7 @@ timeout=3
 function do_bench() {
     trace
     cfont -yellow
-    echo "do_bench $@"
+    echo "do_bench $@ repeat $do_bench_repeats"
     cfont -reset
     import timer
     # for i in $(seq 1 $do_bench_repeats); do
@@ -59,7 +59,7 @@ while test $# -gt 0; do
         ;;
         '--repeat' )
             shift
-            repeat=$1
+            repeats=$1
             shift && continue
         ;;
     esac 
@@ -69,7 +69,7 @@ done
 
 if [ $do_bench -eq 1 ]; then
     do_bench_timeout=$timeout
-    do_bench_repeats=$repeat
+    do_bench_repeats=$repeats
     do_bench $params && pass=1
     test_if_pass "benching $@"
     exit 0
