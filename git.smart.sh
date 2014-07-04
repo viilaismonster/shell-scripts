@@ -80,7 +80,7 @@ case $1 in
     'checkout' )
         test_if_repo
         if [ "$2" == "." ]; then
-            echo "using 'git checkout .' is very dangerous, please use '$GIT_BIN checkout .' if confirmed"
+            echo "using 'git checkout .' is very dangerous, please use '$GIT_BIN checkout .' if confirned"
             exit 1
         fi
     ;;
