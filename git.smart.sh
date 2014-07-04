@@ -3,6 +3,8 @@
 ROOT=~/tool/shell-scripts
 . $ROOT/libs/common.sh
 
+fast_mode=1
+
 branch_name=
 
 function remotes() {
