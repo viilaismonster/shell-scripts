@@ -1,8 +1,16 @@
-if [ "$ROOT" == "" ]; then
-    . libs/cfont.sh
-else
-    . $ROOT/libs/cfont.sh
-fi
+
+
+function import() {
+    if [ "$ROOT" == "" ]; then
+        . libs/$1.sh && return 0
+    else
+        . $ROOT/libs/$1.sh && return 0
+    fi
+    echo "import error: $1"
+    exit 1
+}
+
+import cfont
 
 trace_mode=1
 pass=0
