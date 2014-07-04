@@ -29,16 +29,22 @@ case $1 in
         test_if_staged
         branch
         remotes|while read remote; do
-            echo "pushing to $remote"
+            echo "pushing to $remote..."
             git push $remote $branch_name && pass=1
-            test_if_pass "push $branch_name to $remote"
+            test_if_pass "" "when pushing $branch_name to $remote"
         done
         exit 0
     ;;
     'xpull' )
         test_if_staged
         branch
-        git pull origin $branch_name
+        remote=origin
+        if [ "$2" != "" ]; then
+            remote=$2
+        fi
+        echo "pulling $branch_name from $remote..."
+        git pull origin $branch_name && pass=1
+        test_if_pass "" "when pulling $branch_name from $remote"
         exit 0
     ;;
     'commit-all' | 'ca' )
