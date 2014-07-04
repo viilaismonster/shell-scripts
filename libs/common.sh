@@ -28,13 +28,13 @@ function test_if_pass() {
         cfont -reset
         exit 1
     else
-        cfont -green
         if [ "$1" != "" ]; then
+            cfont -green
             trace "$1 done."
             trace
+            cfont -reset
         fi
         pass=0
     fi
-    cfont -reset
     await
 }
