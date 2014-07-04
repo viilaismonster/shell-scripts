@@ -24,14 +24,17 @@ function test_if_pass() {
     if [ $pass -eq 0 ]; then
         cfont -red
         echo "error happend when $@"
+        trace
         cfont -reset
         exit 1
     else
         cfont -green
-        trace "$1 done."
+        if [ "$1" != "" ]; then
+            trace "$1 done."
+            trace
+        fi
         pass=0
     fi
-    trace
     cfont -reset
     await
 }

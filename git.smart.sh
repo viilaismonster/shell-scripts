@@ -15,15 +15,23 @@ function git() {
 }
 
 function remotes() {
+    test_if_repo
     git remote -v|awk '{print $1}'|uniq
 }
 
 function branch() {
+    test_if_repo
     branch_name=`git branch -a|grep '^*'|awk '{print $2}'` && pass=1
     test_if_pass "get branch [$branch_name]"
 }
 
+function test_if_repo() {
+    git status --porcelain > /dev/null && pass=1
+    test_if_pass "" "no git repository found"
+}
+
 function test_if_staged() {
+    test_if_repo
     count=`git status -s|wc -l|awk '{print $1}'` && pass=1
     if [ $count -gt 0 ]; then
         cfont -red
@@ -62,6 +70,7 @@ case $1 in
         exit 0
     ;;
     'checkout' )
+        test_if_repo
         if [ "$2" == "." ]; then
             echo "using 'git checkout .' is very dangerous, please use '$GIT_BIN checkout .' if confirmed"
             exit 1
