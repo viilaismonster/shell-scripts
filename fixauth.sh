@@ -1,1 +1,0 @@
-../fixauth.sh

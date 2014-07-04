@@ -1,1 +1,0 @@
-../server-teleopen-a.sh

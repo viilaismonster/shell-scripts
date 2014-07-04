@@ -1,1 +1,0 @@
-../viila_ali_beijing.sh
