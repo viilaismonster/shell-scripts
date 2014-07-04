@@ -7,6 +7,13 @@ fast_mode=1
 
 branch_name=
 
+GIT_BIN=/usr/bin/git
+
+function git() {
+    # echo "run git $@"
+    $GIT_BIN $@
+}
+
 function remotes() {
     git remote -v|awk '{print $1}'|uniq
 }
@@ -56,7 +63,7 @@ case $1 in
     ;;
     'checkout' )
         if [ "$2" == "." ]; then
-            echo "using 'gg checkout .' is very dangerous, please use 'git checkout .' if confirmed"
+            echo "using 'git checkout .' is very dangerous, please use '$GIT_BIN checkout .' if confirmed"
             exit 1
         fi
     ;;
