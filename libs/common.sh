@@ -4,7 +4,7 @@ function import() {
     if [ "$ROOT" == "" ]; then
         . libs/$1.sh && return 0
     else
-        . $ROOT/libs/$1.sh && return 0
+        . "$ROOT/libs/$1.sh" && return 0
     fi
     echo "import error: $1"
     exit 1
