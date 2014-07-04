@@ -46,7 +46,7 @@ case $1 in
         test_if_staged
         branch
         remotes|while read remote; do
-            echo "pushing to $remote..."
+            echo "git push $remote $branch_name..."
             git push $remote $branch_name && pass=1
             test_if_pass "" "when pushing $branch_name to $remote"
         done
