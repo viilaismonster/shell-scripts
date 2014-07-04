@@ -26,13 +26,17 @@ function branch() {
 }
 
 function test_if_repo() {
-    git status --porcelain > /dev/null && pass=1
+    git status --porcelain > /dev/null 2>&1 && pass=1
     test_if_pass "" "no git repository found"
+}
+
+function get_unstaged() {
+    git status -s|wc -l|awk '{print $1}'
 }
 
 function test_if_staged() {
     test_if_repo
-    count=`git status -s|wc -l|awk '{print $1}'` && pass=1
+    count=`get_unstaged`
     if [ $count -gt 0 ]; then
         cfont -red
         echo "you have unstaged changes $count"
@@ -82,6 +86,27 @@ case $1 in
     ;;
     'remotes' )
         remotes
+        exit 0
+    ;;
+    'p' | 'print' )
+        shift
+        pwd=`pwd`
+        ls -l|grep ^d|awk '{print $9}'|while read name; do
+            cd $pwd
+            test ! -d $name && continue
+            cd $pwd
+            cd $name
+            repo=0
+            git status > /dev/null 2>&1 && repo=1
+            test $repo -eq 0 && continue
+            # echo "checking folder $name" && continue
+            # get_unstaged && continue
+            unstaged=`get_unstaged`
+            cfont -dim
+            test $unstaged -gt 0 && cfont -red            
+            echo "$name ... "$unstaged
+            cfont -reset
+        done
         exit 0
     ;;
     'l' )
