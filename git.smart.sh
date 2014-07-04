@@ -54,6 +54,12 @@ case $1 in
         git commit -a
         exit 0
     ;;
+    'checkout' )
+        if [ "$2" == "." ]; then
+            echo "using 'gg checkout .' is very dangerous, please use 'git checkout .' if confirmed"
+            exit 1
+        fi
+    ;;
     'remotes' )
         remotes
         exit 0
