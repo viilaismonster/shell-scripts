@@ -15,7 +15,7 @@ do_bench_repeats=5
 
 function do_bench() {
     trace
-    cfont -green
+    cfont -yellow
     echo "do_bench $@"
     cfont -reset
     import timer
