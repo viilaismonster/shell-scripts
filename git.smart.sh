@@ -84,6 +84,10 @@ case $1 in
         remotes
         exit 0
     ;;
+    'l' )
+        $GIT_BIN log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --
+        exit 0
+    ;;
 esac
 
-git $@
+$GIT_BIN $@
