@@ -48,7 +48,7 @@ case $1 in
         remotes|while read remote; do
             echo "git push $remote $branch_name..."
             git push $remote $branch_name && pass=1
-            test_if_pass "" "when pushing $branch_name to $remote"
+            test_if_pass "push $remote $branch_name" "when pushing $branch_name to $remote"
         done
         exit 0
     ;;
@@ -60,8 +60,8 @@ case $1 in
             remote=$2
         fi
         echo "pulling $branch_name from $remote..."
-        git pull origin $branch_name && pass=1
-        test_if_pass "" "when pulling $branch_name from $remote"
+        git pull $remote $branch_name && pass=1
+        test_if_pass "pull $remote $branch_name" "when pulling $branch_name from $remote"
         exit 0
     ;;
     'commit-all' | 'ca' )
