@@ -115,4 +115,4 @@ case $1 in
     ;;
 esac
 
-$GIT_BIN $@
+$GIT_BIN "$@"

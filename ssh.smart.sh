@@ -46,6 +46,7 @@ function do_bench() {
 }
 
 params=""
+params_count=0
 while test $# -gt 0; do
     case "$1" in 
         '--bench' )
@@ -63,7 +64,8 @@ while test $# -gt 0; do
             shift && continue
         ;;
     esac 
-    params=$params" "$1
+    params="$params $1"
+    params_count=$(($params_count+1))
     shift
 done
 
@@ -75,4 +77,6 @@ if [ $do_bench -eq 1 ]; then
     exit 0
 fi
 
+# echo $params
+args_check $params_count $params
 ssh $params

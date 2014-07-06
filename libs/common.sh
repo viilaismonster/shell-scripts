@@ -46,3 +46,30 @@ function test_if_pass() {
     fi
     await
 }
+
+function args_check() {
+    count=$1
+    shift
+    args_count=0
+    # echo "$@"
+    for var in "$@"; do
+        args_count=$(($args_count+1))
+        # echo "+$args_count"
+    done
+
+    # echo "$@ find $args_count args"
+    if [ "$args_count" != "$count" ]; then
+        cfont -red "args number [$count:$args_count] mismatched, using arg with space under current framework will cause unknown problems!"
+        echo
+        cfont -reset "to turn this error off, use args_check=off before including " -yellow "common.sh" -reset
+        echo
+        exit 1
+    fi
+
+    # echo "args check $args_count -> $count"
+}
+
+if [ "$args_check" == "" ]; then
+    args_check $# "$@"
+    # exit 0
+fi
