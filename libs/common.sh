@@ -47,6 +47,13 @@ function test_if_pass() {
     await
 }
 
+function test_in_list() {
+    # return 1 -> not in the list
+    test ! -f $2 && return 1
+    test "`cat $2|grep $1|wc -l|awk '{print $1}'`" != "0" && return 0
+    return 1
+}
+
 function args_check() {
     count=$1
     shift

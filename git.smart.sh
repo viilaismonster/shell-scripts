@@ -94,6 +94,7 @@ case $1 in
         ls -l|grep ^d|awk '{print $9}'|while read name; do
             cd $pwd
             test ! -d $name && continue
+            test_in_list $name .gitignore && continue
             cd $pwd
             cd $name
             repo=0
