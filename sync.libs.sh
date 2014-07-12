@@ -3,6 +3,8 @@
 ROOT=~/tool/shell-scripts
 . $ROOT/libs/common.sh
 
+fast_mode=1
+
 ss_lib=$ROOT/libs
 
 test -d $ss_lib && pass=1
