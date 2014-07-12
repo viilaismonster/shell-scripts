@@ -4,14 +4,14 @@ shell-scripts
 scripts for easy using shell
 
 
-# suggested alias #
+## suggested alias ##
 
 > alias git=~/tool/shell-scripts/git.smart.sh
 
 > alias ssh=~/tool/shell-scripts/ssh.smart.sh
 
 
-## git.smart.sh ##
+### git.smart.sh ###
 
 > git xpush
 
@@ -30,13 +30,13 @@ git commit -am
 show all remotes in list
 
 
-# ssh.smart.sh ##
+### ssh.smart.sh ###
 
 > ssh --bench ADDRESS --timeout TIMEOUT --repeats REPEAT_TIMES
 
 test if ssh to server stable
 
 
-# sync.libs.sh ##
+### sync.libs.sh ###
 
 copy/sync shell-scripts libs to other folder (force)

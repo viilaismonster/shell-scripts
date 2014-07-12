@@ -8,7 +8,7 @@ how-to
 > $ import_once LIB_NAME
 
 
-## common.sh ##
+### common.sh ###
 
 libs entrance script
 
@@ -17,7 +17,7 @@ libs entrance script
 >  . $ROOT/libs/common.sh
 
 
-## cfont.sh ##
+### cfont.sh ###
 
 use color in console output
 
@@ -28,7 +28,7 @@ use color in console output
 > cfont --black|dim|white|gray
 
 
-## timer.sh ##
+### timer.sh ###
 
 > timer_start
 
@@ -39,7 +39,7 @@ use color in console output
 > timer_clean
 
 
-## booter.sh ##
+### booter.sh ###
 
 > booter_config -n PROGRESS_NAME [--background|--console|-m MODE] BOOTER_COMMAND
 
