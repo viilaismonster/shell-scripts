@@ -1,13 +1,27 @@
+#!/bin/bash
 
+import_history=""
+
+function import_once() {
+    if grep -q "@$1" <<< "$import_history"; then
+        return 0
+    fi
+    import $@
+}
 
 function import() {
+    pass=0
     if [ "$ROOT" == "" ]; then
-        . libs/$1.sh && return 0
+        . libs/$1.sh && pass=1
     else
-        . "$ROOT/libs/$1.sh" && return 0
+        . "$ROOT/libs/$1.sh" && pass=1
     fi
-    echo "import error: $1"
-    exit 1
+    if [ $pass -eq 0 ]; then
+        echo "import error: $1"
+        exit 1
+    fi
+    import_history="$import_history@$1"
+    pass=0
 }
 
 import cfont
@@ -20,6 +34,12 @@ function await() {
     if [ $fast_mode -eq 0 ]; then
         sleep 1
     fi
+}
+
+function trace_cfont() {
+    if [ $trace_mode -ne 0 ]; then
+        cfont $@
+    fi 
 }
 
 function trace() {
@@ -37,10 +57,10 @@ function test_if_pass() {
         exit 1
     else
         if [ "$1" != "" ]; then
-            cfont -green
+            trace_cfont -green 
             trace "$1 done."
             trace
-            cfont -reset
+            trace_cfont -reset
         fi
         pass=0
     fi
