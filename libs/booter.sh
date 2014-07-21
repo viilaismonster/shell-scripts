@@ -56,10 +56,11 @@ function booter_start() {
             ;;
         esac
     fi
+    echo "run $booter_progress_name, mode=$booter_mode"
+    cfont -yellow "> $booter_progress_run" -reset -n
     if [ "$booter_mode" == "2" ]; then
         nohup $booter_progress_run >> $booter_progress_background_out &
     else
         $booter_progress_run
     fi
-    echo
 }
