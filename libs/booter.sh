@@ -60,6 +60,7 @@ function booter_start() {
     cfont -yellow "> $booter_progress_run" -reset -n
     if [ "$booter_mode" == "2" ]; then
         nohup $booter_progress_run >> $booter_progress_background_out &
+        await
     else
         $booter_progress_run
     fi
