@@ -16,7 +16,7 @@ function git() {
 
 function remotes() {
     test_if_repo
-    git remote -v|awk '{print $1}'|uniq
+    git remote -v|awk '{print $1}'|uniq|grep -v '^manual_'
 }
 
 function branch() {
