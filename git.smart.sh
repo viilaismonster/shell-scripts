@@ -8,6 +8,7 @@ fast_mode=1
 branch_name=
 
 GIT_BIN=/usr/bin/git
+GIT_MULTI=$ROOT/git.multi.sh
 
 function git() {
     # echo "run git $@"
@@ -45,7 +46,19 @@ function test_if_staged() {
     fi    
 }
 
+if [ "$1" == "coloroff" ]; then
+    cfont_off=1
+    shift
+fi
+
+cmd=$1
 case $1 in
+    'all' )
+        shift
+        # cfont "run" -yellow " $GIT_MULTI $@" -reset
+        $GIT_MULTI $@
+        exit 0
+    ;;
     'xpush' )
         test_if_staged
         branch
@@ -73,7 +86,10 @@ case $1 in
         exit 0
     ;;
     'commit-all' | 'ca' )
-        git add .
+        if [ "`get_unstaged`" == "0" ]; then
+            exit 2
+        fi
+        git add . -A
         git commit -a
         exit 0
     ;;
@@ -88,7 +104,7 @@ case $1 in
         remotes
         exit 0
     ;;
-    'p' | 'print' )
+    'p' | 'print' | 'print_changed' | 'pc' )
         shift
         pwd=`pwd`
         ls -l|grep ^d|awk '{print $9}'|while read name; do
@@ -104,7 +120,12 @@ case $1 in
             # get_unstaged && continue
             unstaged=`get_unstaged`
             cfont -dim
-            test $unstaged -gt 0 && cfont -red            
+            if [ "$cmd" == "print_changed" -o "$cmd" == "pc" ]; then
+                 if [ $unstaged -eq 0 ]; then
+                    continue
+                 fi
+            fi
+            test $unstaged -gt 0 && cfont -red
             echo "$name ... "$unstaged
             cfont -reset
         done
@@ -117,3 +138,5 @@ case $1 in
 esac
 
 $GIT_BIN "$@"
+
+
