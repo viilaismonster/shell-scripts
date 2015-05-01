@@ -56,8 +56,12 @@ case $1 in
     'all' )
         shift
         # cfont "run" -yellow " $GIT_MULTI $@" -reset
-        $GIT_MULTI $@
+        $GIT_MULTI $@ *
         exit 0
+    ;;
+    'each' )
+        shift
+        $GIT_MULTI $@
     ;;
     'xpush' )
         test_if_staged
