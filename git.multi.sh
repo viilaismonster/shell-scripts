@@ -78,7 +78,7 @@ function clone() {
 
 function enter_folder_git() {
     cd $2
-    $XGIT $1 $2
+    $XGIT $1
     ret=$?
     cd -
     return $ret
