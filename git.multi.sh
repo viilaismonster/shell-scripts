@@ -79,14 +79,17 @@ function clone() {
 function cmd_status() {
     # echo "run cmd_status for $1 in `pwd`"
     case $1 in
-        'enter_folder_git_xpush' )
-            echo `git log --oneline origin..HEAD | wc -l` "commits"
-        ;;
-        'enter_folder_git_xpull' )
-            echo `git log --oneline HEAD..origin | wc -l` "commits"
-        ;;
+        # 'enter_folder_git_xpush' )
+        #     echo `git log --oneline origin..HEAD | wc -l` "commits"
+        # ;;
+        # 'enter_folder_git_xpull' )
+        #     echo `git log --oneline HEAD..origin | wc -l` "commits"
+        # ;;
         'enter_folder_commit' )
             echo `get_unstaged` "changes"
+        ;;
+        * )
+            git status --porcelain --branch
         ;;
     esac
 }

@@ -65,7 +65,7 @@ case $1 in
         exit 0
     ;;
     'xpush' )
-        test_if_staged
+        # test_if_staged
         branch
         remotes|while read remote; do
             cfont -yellow
