@@ -62,6 +62,7 @@ case $1 in
     'each' )
         shift
         $GIT_MULTI $@
+        exit 0
     ;;
     'xpush' )
         test_if_staged

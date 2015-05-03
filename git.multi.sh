@@ -1,5 +1,4 @@
 #!/bin/bash
-
 ROOT=~/tool/shell-scripts
 . $ROOT/libs/common.sh
 ERR=/tmp/git_multi_err
@@ -38,22 +37,23 @@ function loop_folder() {
     folder_test=$1; shift
     cmd=$1; shift
     cfont "foreach " -green "$# " -reset
-    cfont "looping " -green "@$folder_test " -reset 
+    cfont "filter " -green "@$folder_test " -reset 
     cfont "run " -green "$cmd" -reset -n
     echo
     while test $# -gt 0; do
         folder=$1
         shift
         $folder_test $folder
-        if [ $? -ne 0 ]; then 
+        if [ $? -ne 0 ]; then
             continue
         fi
         cfont "$cmd >" -yellow " `str_fix 30 $folder` \t" -reset "..."
+        status=`enter_folder_run 'cmd_status' $cmd $folder`
         $cmd $folder 1>$ERR 2>&1
         # $cmd $folder
         case $? in
             0 )
-                cfont -green " [ok]" -reset -n
+                cfont -green " [ok]" -dim " $status" -reset -n
             ;;
             2 )
                 cfont -dim " [ignore]" -reset -n
@@ -76,12 +76,33 @@ function clone() {
     git clone $1/$2.git
 }
 
-function enter_folder_git() {
-    cd $2
-    $XGIT $1
+function cmd_status() {
+    # echo "run cmd_status for $1 in `pwd`"
+    case $1 in
+        'enter_folder_git_xpush' )
+            echo `git log --oneline origin..HEAD | wc -l` "commits"
+        ;;
+        'enter_folder_git_xpull' )
+            echo `git log --oneline HEAD..origin | wc -l` "commits"
+        ;;
+        'enter_folder_commit' )
+            echo `get_unstaged` "changes"
+        ;;
+    esac
+}
+
+function enter_folder_run() {
+    # echo "enter folder $3 run $1 with args $2"
+    cd $3
+    $1 $2
     ret=$?
-    cd -
+    cd - > /dev/null
     return $ret
+}
+
+function enter_folder_git() {
+    enter_folder_run $XGIT $@
+    return $?
 }
 
 function enter_folder_git_xpush() { 
@@ -104,7 +125,7 @@ function enter_folder_commit() {
         return 2
     fi
     git add . -A
-    git commit --file=$COMMENT
+    git commit --file=$COMMENT.trim
     cd -
 }
 
@@ -126,6 +147,19 @@ case $cmd in
         $XGIT coloroff pc | awk -F '#' '{print "# "$1}' >> $COMMENT
         echo "# " >> $COMMENT
         vi $COMMENT
+        cat $COMMENT | grep -v ^# | grep -v "^ *$" > $COMMENT.trim
+        line_count=`cat $COMMENT.trim | wc -l | awk '{print $1}'`
+        if [ "$line_count" == "0" ]; then
+            >&2 cfont -red "commit more than 1 line!" -reset -n
+            exit 1
+        fi
+        echo
+        echo "committing..."
+        echo
+        cfont -yellow
+        cat $COMMENT.trim
+        cfont -reset
+        echo
         loop_folder is_git_folder "enter_folder_commit" $@
     ;;
     'clone' )
