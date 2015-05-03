@@ -64,14 +64,18 @@ case $1 in
         $GIT_MULTI $@
         exit 0
     ;;
-    'xpush' )
+    'xpush' | 'upush' )
         # test_if_staged
         branch
         remotes|while read remote; do
             cfont -yellow
-            echo "git push $remote $branch_name..."
             cfont -reset
-            git push $remote $branch_name && pass=1
+            push_arg=
+            if [ "$cmd" == "upush" -a "$remote" == "origin" ]; then
+                push_arg="-u"
+            fi
+            echo "git push $push_arg $remote $branch_name..."
+            git push $push_arg $remote $branch_name && pass=1
             test_if_pass "push $remote $branch_name" "when pushing $branch_name to $remote"
         done
         exit 0

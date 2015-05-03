@@ -112,6 +112,10 @@ function enter_folder_git_xpush() {
     enter_folder_git xpush $@ 
     return $?
 }
+function enter_folder_git_upush() { 
+    enter_folder_git upush $@ 
+    return $?
+}
 function enter_folder_git_xpull() { 
     enter_folder_git xpull $@ 
     return $?
@@ -139,7 +143,7 @@ function get_unstaged() {
 cmd=$1
 shift
 case $cmd in
-    'xpush' | 'xpull' | 'ca' )
+    'xpush' | 'upush' | 'xpull' | 'ca' )
         loop_folder is_git_folder "enter_folder_git_$cmd" $@
     ;;
     'commit' )
