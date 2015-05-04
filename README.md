@@ -23,10 +23,10 @@ so I write this extension:
 
 for folder structure like
 
-+ project
-|-----mod1
-|-----mod2
-|-----mod3
+/project/  
+        /mod1  
+        /mod2  
+        /mod3  
 
 ```
 git all xpull
