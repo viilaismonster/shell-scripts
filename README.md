@@ -10,6 +10,37 @@ scripts for easy using shell
 
 > alias ssh=~/tool/shell-scripts/ssh.smart.sh
 
+### git.multi.sh ###
+
+git extension for multi repositories situation
+
+> git (all|each) (xpush|xpull|commit) [args]
+
+currently I am working with a project with so many repos to commit in the same time,
+and each time when I want to make a commit, I need to cd into a folder, then commit, then push, then cd -, then switch to next folder.
+
+so I write this extension:
+
+for folder structure like
+
++ project
+|-----mod1
+|-----mod2
+|-----mod3
+
+```
+git all xpull
+git all commit
+git all xpush
+```
+
+also, when you don't want to push all folder, use git each [args] instead
+
+```
+git each xpull mod2 mod3
+git each commit mod2 mod3 
+git all xpush
+```
 
 ### git.smart.sh ###
 
