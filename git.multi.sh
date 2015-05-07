@@ -47,7 +47,7 @@ function loop_folder() {
         if [ $? -ne 0 ]; then
             continue
         fi
-        cfont "$cmd >" -yellow " `str_fix 30 $folder` \t" -reset "..."
+        cfont "`cmd_brief $cmd` >" -yellow " `str_fix 30 $folder` \t" -reset "..."
         status=`enter_folder_run 'cmd_status' $cmd $folder`
         $cmd $folder 1>$ERR 2>&1
         # $cmd $folder
@@ -94,6 +94,26 @@ function cmd_status() {
     esac
 }
 
+function cmd_brief() {
+    case $1 in
+        'enter_folder_git_xpush' )
+            echo 'xpush'
+        ;;
+        'enter_folder_git_xpull' )
+            echo 'xpull'
+        ;;
+        'enter_folder_git_upush' )
+            echo 'upush'
+        ;;
+        'enter_folder_commit' )
+            echo 'commit'
+        ;;
+        * )
+            echo $1
+        ;;
+    esac
+}
+
 function enter_folder_run() {
     # echo "enter folder $3 run $1 with args $2"
     cd $3
@@ -120,10 +140,6 @@ function enter_folder_git_xpull() {
     enter_folder_git xpull $@ 
     return $?
 }
-function enter_folder_git_ca() { 
-    enter_folder_git ca $@ 
-    return $?
-}
 
 function enter_folder_commit() {
     cd $1
@@ -143,7 +159,7 @@ function get_unstaged() {
 cmd=$1
 shift
 case $cmd in
-    'xpush' | 'upush' | 'xpull' | 'ca' )
+    'xpush' | 'upush' | 'xpull' )
         loop_folder is_git_folder "enter_folder_git_$cmd" $@
     ;;
     'commit' )
