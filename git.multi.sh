@@ -90,7 +90,12 @@ function cmd_status() {
             echo `get_unstaged` "changes"
         ;;
         'enter_folder_git_xpull' )
-            git remote update >/dev/null 2>&1
+            remotes_count=`$XGIT remotes|wc -l|awk '{print $1}'`
+            if [ $remotes_count -gt 1 ]; then
+                git remote update origin >/dev/null 2>&1
+            else
+                git remote update >/dev/null 2>&1
+            fi
             git status --porcelain --branch
         ;;
         * )
