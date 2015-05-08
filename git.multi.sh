@@ -88,6 +88,10 @@ function cmd_status() {
         'enter_folder_commit' )
             echo `get_unstaged` "changes"
         ;;
+        'enter_folder_git_xpull' )
+            git remote update >/dev/null 2>&1
+            git status --porcelain --branch
+        ;;
         * )
             git status --porcelain --branch
         ;;
