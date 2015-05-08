@@ -74,6 +74,7 @@ function clone() {
         return 2
     fi
     git clone $1/$2.git
+    return $?
 }
 
 function cmd_status() {
