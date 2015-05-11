@@ -125,6 +125,9 @@ function cmd_brief() {
 }
 
 function enter_folder_run() {
+    if [ ! -d $3 ]; then
+        return 1
+    fi
     # echo "enter folder $3 run $1 with args $2"
     cd $3
     $1 $2
