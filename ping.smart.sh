@@ -11,37 +11,66 @@ if [ $# -eq 0 ]; then
 fi
 
 ping_tmp=/tmp/pings
+timeout=3
+fix=10
+
+function clear_tmp() {
+    rm -Rf $ping_tmp$1
+    mkdir $ping_tmp$1
+}
 
 if [ -d $1 ]; then
-    rm -Rf $ping_tmp
-    mkdir $ping_tmp
+    clear_tmp
     ls $1 | while read line; do
         touch $ping_tmp/$line
     done
-else
-    ping $@
-    exit
+fi
+
+if [ $# -gt 0 ]; then
+    args=$@
+    ping $args
+    ret=$?
+    if [ $ret -ne 0 ]; then
+        case $ret in
+            64 )
+                clear
+                clear_tmp
+                for addr in $args; do
+                    touch $ping_tmp/$addr
+                done
+            ;;
+            * )
+
+            ;;
+        esac
+    fi
+
+    if [ $ret -eq 0 ]; then
+        exit
+    fi
 fi
 
 if [ ! -d $ping_tmp ]; then
     cfont -red "$ping_tmp not found" -n -reset
 fi
 
-timeout=3
-fix=10
-
 function ping_and_record() {
     addr=$1
     touch $ping_tmp/$addr.runtime.cost
-    result=`ping -c 1 -t $timeout $addr|grep time|head -1`
+    ping -c 1 -t $timeout $addr > /$ping_tmp/$addr.runtime.result
+    ret=$?
+    result=`cat $ping_tmp/$addr.runtime.result|grep time|head -1`
+    # cfont "?" >> $ping_tmp/$addr
     cost=`echo $result| sed 's/.*time=\(.*\)/\1/g'`
     echo $cost > /$ping_tmp/$addr.runtime.cost
-    case $? in
+    # cat $ping_tmp/$addr | sed 's/.$//g' > $ping_tmp/$addr
+    case $ret in
         0 )
-            cfont -green "." -reset >> $ping_tmp/$addr
+            cfont -green "." >> $ping_tmp/$addr
             ;;
         * )
-            cfont -red "x" -reset >> $ping_tmp/$addr
+            cfont -red "x" >> $ping_tmp/$addr
+            echo "----" > $ping_tmp/$addr.runtime.cost
             ;;
     esac
 }
@@ -83,7 +112,7 @@ function loop() {
         cfont "`str_fix $fix $addr` "
         cfont "[" -yellow `cat $ping_tmp/$addr.runtime.cost` -reset "] "
         cat $ping_tmp/$addr
-        echo
+        cfont -reset -n
     done
 
     sleep $timeout
