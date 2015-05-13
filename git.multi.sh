@@ -142,6 +142,16 @@ function enter_folder_git() {
 }
 
 function enter_folder_git_xpush() { 
+    cd $1
+    status=`git status --porcelain --branch|grep ahead|wc -l|awk '{print $1}'` > /dev/null
+    ret=$?
+    cd - > /dev/null
+    if [ $ret -ne 0 ]; then
+        return 1
+    fi
+    if [ "$status" == "0" ]; then
+        return 2
+    fi
     enter_folder_git xpush $@ 
     return $?
 }
