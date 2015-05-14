@@ -30,24 +30,18 @@ if [ $# -gt 0 ]; then
     args=$@
     ping $args
     ret=$?
-    if [ $ret -ne 0 ]; then
-        case $ret in
-            64 )
-                clear
-                clear_tmp
-                for addr in $args; do
-                    touch $ping_tmp/$addr
-                done
-            ;;
-            * )
-
-            ;;
-        esac
-    fi
-
-    if [ $ret -eq 0 ]; then
-        exit
-    fi
+    case $ret in
+        64 )
+            clear
+            clear_tmp
+            for addr in $args; do
+                touch $ping_tmp/$addr
+            done
+        ;;
+        * )
+            exit
+        ;;
+    esac
 fi
 
 if [ ! -d $ping_tmp ]; then

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-import_history=""
+# import_history=""
 
 function import_once() {
     if grep -q "@$1" <<< "$import_history"; then
@@ -9,18 +9,45 @@ function import_once() {
     import $@
 }
 
+function _len() {
+    echo `echo $@|wc -c|awk '{print $1}'`
+}
+
+function _fn_exists() {
+    declare -f -F $1 > /dev/null
+    return $?
+}
+
+function _shell_scripts_root() {
+    if _fn_exists shell_scripts_root; then
+        echo `shell_scripts_root`
+        return
+    fi
+    if [ `_len $ROOT` -gt 1 ]; then
+        echo $ROOT
+        return
+    fi
+    if [ `_len $ssROOT` -gt 1 ]; then
+        echo $ssROOT
+        return
+    fi
+    if [ -f ~/.ss_root_path ]; then
+        cat ~/.ss_root_path
+        return
+    fi
+    return 1
+}
+
 function import() {
     pass=0
-    if [ "$ROOT" == "" ]; then
-        . libs/$1.sh && pass=1
-    else
-        . "$ROOT/libs/$1.sh" && pass=1
+    if _shell_scripts_root > /dev/null 2>&1; then
+        . `_shell_scripts_root`/libs/$1.sh && pass=1
     fi
     if [ $pass -eq 0 ]; then
-        echo "import error: $1"
+        >&2 echo "import error: $1"
         exit 1
     fi
-    import_history="$import_history@$1"
+    # import_history="$import_history@$1"
     pass=0
 }
 
@@ -96,7 +123,7 @@ function args_check() {
     # echo "args check $args_count -> $count"
 }
 
-if [ "$args_check" == "" ]; then
-    args_check $# "$@"
-    # exit 0
-fi
+# if [ "$args_check" == "" ]; then
+#     args_check $# "$@"
+#     # exit 0
+# fi
