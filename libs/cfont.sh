@@ -1,57 +1,89 @@
 cfont_off=0
+cfont_sh_echo=`echo -ne|wc -c|awk '{print $1}'`
+
 function cfont_print {
     if [ $cfont_off -ne 0 ]; then
         return
     fi
-    echo $@
+    case $cfont_sh_echo in
+        0 )
+            echo $@
+        ;;
+        * )
+            if [[ $# -eq 2 ]]; then
+                shift
+            fi
+            echo $@
+        ;;
+    esac
 }
 function cecho {
-    cfont $@ -reset -n
+    if [[ $cfont_sh_echo -ne 0 ]]; then
+        cfont $@ -reset
+    fi
+    if [[ $cfont_sh_echo -eq 0 ]]; then
+        cfont $@ -reset -n
+    fi
 }
 function cfont {
+    line=""
+    insert_blank=0
     while (($#!=0))
     do
         case $1 in
                 -b)
-                        echo -ne " ";
+                        line+=" "
                 ;;
                 -t)
-                        echo -ne "\t";
+                        line+="\t"
                 ;;
-                -n)     echo -ne "\n";
+                -n)     
+                        line+="\n"
+                        insert_blank=0
                 ;;
                 -black|-dim)
-                        cfont_print -ne "\033[30m";
+                        line+=`cfont_print -ne "\033[30m"`
                 ;;
                 -red)
-                        cfont_print -ne "\033[31m";
+                        line+=`cfont_print -ne "\033[31m"`
                 ;;
                 -green)
-                        cfont_print -ne "\033[32m";
+                        line+=`cfont_print -ne "\033[32m"`
                 ;;
                 -yellow)
-                        cfont_print -ne "\033[33m";
+                        line+=`cfont_print -ne "\033[33m"`
                 ;;
                 -blue)
-                        cfont_print -ne "\033[34m";
+                        line+=`cfont_print -ne "\033[34m"`
                 ;;
                 -purple)
-                        cfont_print -ne "\033[35m";
+                        line+=`cfont_print -ne "\033[35m"`
                 ;;
                 -cyan)
-                        cfont_print -ne "\033[36m";
+                        line+=`cfont_print -ne "\033[36m"`
                 ;;
-                -white|-gray) cfont_print -ne "\033[37m";
+                -white|-gray) 
+                        line+=`cfont_print -ne "\033[37m"`
                 ;;
                 -reset)
-                        cfont_print -ne "\033[0m";
+                        line+=`cfont_print -ne "\033[0m"`
                 ;;
                 *)
-                echo -ne "$1"
+                    if [[ $insert_blank -ne 0 ]]; then
+                        line+=" "
+                    fi
+                    line+=$1
+                    insert_blank=1
                 ;;
         esac
         shift
     done
+    if [[ $cfont_sh_echo -ne 0 ]]; then
+        echo $line
+    fi
+    if [[ $cfont_sh_echo -eq 0 ]]; then
+        echo -ne $line
+    fi
 }
 
 function cfont_test() {
