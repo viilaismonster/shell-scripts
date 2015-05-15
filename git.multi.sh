@@ -48,7 +48,7 @@ function loop_folder() {
         if [ $? -ne 0 ]; then
             continue
         fi
-        cfont "`cmd_brief $cmd` >" -yellow " `str_fix 30 $folder` \t." -reset "..."
+        cfont "`cmd_brief $cmd` >" -yellow " `str_fix 36 $folder` \t." -reset "..."
         status=`enter_folder_run 'cmd_status' $cmd $folder`
         $cmd $folder 1>$ERR 2>&1
         # $cmd $folder
