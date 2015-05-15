@@ -26,7 +26,7 @@ if [ -d $1 ]; then
     done
 fi
 
-if [ $# -gt 0 ]; then
+if [ ! -d $1 ]; then
     args=$@
     ping $args
     ret=$?
