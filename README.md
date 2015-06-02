@@ -8,7 +8,7 @@ scripts for easy using shell
 
 > alias git=~/tool/shell-scripts/git.smart.sh
 
-> alias ssh=~/tool/shell-scripts/ssh.smart.sh
+> alias ping=~/tool/shell-scripts/ping.smart.sh
 
 ### git.multi.sh ###
 
