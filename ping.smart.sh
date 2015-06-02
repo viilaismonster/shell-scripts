@@ -109,11 +109,12 @@ function print_header() {
     cfont "ping " `ls $ping_tmp |grep -v runtime| wc -l` ", timeout = $timeout, rotate = $rotate" -n
 }
 
+clen=6
 if [ $cfont_off -eq 1 ]; then
-    rotatec=$((1*$rotate))
-else
-    rotatec=$((6*$rotate))
+    clen=1
 fi
+rotatec=$(($clen*1*$rotate))
+# echo "rotatec = $rotatec"; exit
 
 function loop() {
     for addr in `ls $ping_tmp|grep -v runtime`; do
@@ -129,9 +130,17 @@ function loop() {
     for addr in `ls $ping_tmp|grep -v runtime`; do
         cfont "`str_fix $fix $addr` "
         cost=`cat $ping_tmp/$addr.runtime.cost`
-        cfont "[" -yellow `str_fix 12 $cost` -reset "] :"
-        cat $ping_tmp/$addr | tail -c $rotatec
-        cfont -reset -n
+        cfont "[" -yellow `str_fix 12 $cost` -reset "] : "
+        stat=`cat $ping_tmp/$addr | tail -c $rotatec`
+        cfont $stat
+        xcount=`grep -o 'x' <<< $stat | wc -l|awk '{print $1}'`
+        ctotal=`echo -n $stat|wc -c`
+        ctotal=$(($ctotal/$clen))
+        if [ $xcount -gt 0 ]; then
+            cfont -dim " " $(($xcount*100/$ctotal)) '%'
+        fi
+        cfont -reset
+        cfont -n
     done
 
     sleep $timeout
