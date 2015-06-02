@@ -11,34 +11,38 @@ function ssh() {
     $SSH_BIN $@
 }
 
-do_bench=0
-do_bench_repeats=5
-do_bench_timeout=3
-
 repeats=5
-timeout=3
+timeout=10
+
+do_bench=0
+do_bench_repeats=$repeats
+do_bench_timeout=$timeout
 
 function do_bench() {
     trace
     cfont -yellow
-    echo "do_bench $@ repeat $do_bench_repeats"
+    echo "do_bench $@ timeout $do_bench_timeout repeat $do_bench_repeats"
     cfont -reset
     import timer
     # for i in $(seq 1 $do_bench_repeats); do
     for (( i=0; i<do_bench_repeats; i++ )); do
         timer_start
         echo -n "test $i/$do_bench_repeats..."
-        cost="timeout"
+        cost="err"
         if grep -q "^git" <<< "$@"; then
             ssh $@ -o ConnectTimeout=$do_bench_timeout > /dev/null 2>&1 && cost="ok"
         else
             ssh $@ -o ConnectTimeout=$do_bench_timeout exit > /dev/null 2>&1 && cost="ok"
         fi
-        if [ "$cost" == "timeout" ]; then
+        if [ "$cost" == "err" ]; then
             cfont -red
-        else
             cost="cost `timer_print` second"
+            if [ `timer_print` -ge $do_bench_timeout ]; then
+                cost="$cost, timeout"
+            fi
+        else
             cfont -green
+            cost="cost `timer_print` second"
         fi
         echo " $cost"
         cfont -reset
@@ -62,6 +66,9 @@ while test $# -gt 0; do
             shift
             repeats=$1
             shift && continue
+        ;;
+        '--color-off' )
+            cfont_off=1
         ;;
     esac 
     params="$params $1"

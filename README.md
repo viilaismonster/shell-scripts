@@ -63,9 +63,13 @@ show all remotes in list
 
 ### ssh.smart.sh ###
 
-> ssh --bench ADDRESS --timeout TIMEOUT --repeats REPEAT_TIMES
+> ./ssh --bench ADDRESS --timeout TIMEOUT --repeat REPEAT_TIMES
 
 test if ssh to server stable
+
+```
+./ssh.smart.sh --bench git@github.com --timeout 10 --repeat 10
+```
 
 ### ping.smart.sh ###
 
