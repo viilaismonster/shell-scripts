@@ -67,6 +67,28 @@ show all remotes in list
 
 test if ssh to server stable
 
+### ping.smart.sh ###
+
+> ping [--rotate n] [--timeout n] [--tmp path_to_tmp] [--color-off] address1 address2 ...
+
+ping several address at the same time
+
+```
+# ping all DigitalOcean regions
+cat << EOF | bash
+./ping.smart.sh \
+--timeout 1 \
+--rotate 10 \
+ speedtest-ams1.digitalocean.com \
+ speedtest-lon1.digitalocean.com \
+ speedtest-nyc3.digitalocean.com \
+ speedtest-ams2.digitalocean.com \
+ speedtest-ny1.digitalocean.com \
+ speedtest-sfo1.digitalocean.com \
+ speedtest-ams3.digitalocean.com \
+ speedtest-nyc2.digitalocean.com \
+ speedtest-sgp1.digitalocean.com
+```
 
 ### sync.libs.sh ###
 

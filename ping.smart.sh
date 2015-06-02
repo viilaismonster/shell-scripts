@@ -5,11 +5,6 @@ ROOT=~/tool/shell-scripts
 
 fast_mode=1
 
-if [ $# -eq 0 ]; then
-    ping 8.8.8.8
-    exit
-fi
-
 ping_tmp=/tmp/pings
 timeout=3
 fix=10
@@ -43,6 +38,11 @@ while [ $# -gt 0 ]; do
     esac
     shift
 done
+
+if [ $# -eq 0 ]; then
+    ping 8.8.8.8
+    exit
+fi
 
 # in dir mode, save each address to $ping_tmp, then foreach files inside $ping_tmp, do ping_and_record
 if [ -d $1 ]; then
