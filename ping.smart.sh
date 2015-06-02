@@ -13,12 +13,38 @@ fi
 ping_tmp=/tmp/pings
 timeout=3
 fix=10
+rotate=30
 
 function clear_tmp() {
     rm -Rf $ping_tmp$1
     mkdir $ping_tmp$1
 }
 
+while [ $# -gt 0 ]; do
+    case $1 in
+        --rotate )
+            shift
+            rotate=$1
+        ;;
+        --tmp )
+            shift
+            ping_tmp=$1
+        ;;
+        --timeout )
+            shift
+            timeout=$1
+        ;;
+        --color-off )
+            cfont_off=1
+        ;;
+        * )
+            break
+        ;;
+    esac
+    shift
+done
+
+# in dir mode, save each address to $ping_tmp, then foreach files inside $ping_tmp, do ping_and_record
 if [ -d $1 ]; then
     clear_tmp
     ls $1 | while read line; do
@@ -26,12 +52,14 @@ if [ -d $1 ]; then
     done
 fi
 
+# if not dir mode
 if [ ! -d $1 ]; then
     args=$@
+    # try ping first
     ping $args
     ret=$?
     case $ret in
-        64 )
+        64 ) # if not a valid ping command, treat it as dir mode
             clear
             clear_tmp
             for addr in $args; do
@@ -72,40 +100,37 @@ function ping_and_record() {
 function str_fix() {
     len=$1
     shift
-    str=$1"                                                       "
+    str=$@" ___________________________________________________________________"
     echo "${str:0:$len}"
 }
 
 
 function print_header() {
-    cfont "ping " `ls $ping_tmp |grep -v runtime| wc -l` ", timeout = $timeout" -n
+    cfont "ping " `ls $ping_tmp |grep -v runtime| wc -l` ", timeout = $timeout, rotate = $rotate" -n
 }
+
+if [ $cfont_off -eq 1 ]; then
+    rotatec=$((1*$rotate))
+else
+    rotatec=$((6*$rotate))
+fi
 
 function loop() {
     for addr in `ls $ping_tmp|grep -v runtime`; do
         len=`echo $addr | wc -c | awk '{print $1}'`
-        if [ $len -gt $fix ]; then
-            fix=20
-        fi
-        if [ $len -gt $fix ]; then
-            fix=25
-        fi
-        if [ $len -gt $fix ]; then
-            fix=30
-        fi
-        if [ $len -gt $fix ]; then
-            fix=40
-        fi
+        if [ $len -gt $fix ]; then fix=$(($len+4)); fi
         ping_and_record $addr > /dev/null &
     done
     
     clear
     print_header
 
+
     for addr in `ls $ping_tmp|grep -v runtime`; do
         cfont "`str_fix $fix $addr` "
-        cfont "[" -yellow `cat $ping_tmp/$addr.runtime.cost` -reset "] "
-        cat $ping_tmp/$addr
+        cost=`cat $ping_tmp/$addr.runtime.cost`
+        cfont "[" -yellow `str_fix 12 $cost` -reset "] :"
+        cat $ping_tmp/$addr | tail -c $rotatec
         cfont -reset -n
     done
 
