@@ -116,7 +116,7 @@ function ping_and_record() {
         raw=`platform_ping $addr $timeout`
         ret=$?
     else
-        raw=`platform_ping $resoloved $timeout`
+        raw=`platform_ping $resolved $timeout`
         ret=$?
     fi
     # >&2 echo "[ping $addr/$resolved ret=$ret"
