@@ -50,12 +50,22 @@ fi
 if [ -d $1 ]; then
     clear_tmp
     ls $1 | while read line; do
-        touch $ping_tmp/$line
+        cp -f $1/$line $ping_tmp/$line
+    done
+fi
+
+if [ -f $1 ]; then
+    clear_tmp
+    cat $1 | while read line; do
+        name=`echo $line|awk '{print $1}'`
+        resolved=`echo $line|awk '{print $2}'`
+        echo "name = $name, resloved = $resolved"
+        echo -n $resolved > $ping_tmp/$name
     done
 fi
 
 # if not dir mode
-if [ ! -d $1 ]; then
+if [ ! -d $1 ] && [ ! -f $1 ]; then
     args=$@
     # try ping first
     ping $args
@@ -80,22 +90,26 @@ fi
 
 function ping_and_record() {
     addr=$1
+    resolved=$2
     touch $ping_tmp/$addr.runtime.cost
-    # ping -c 1 -t $timeout $addr > /$ping_tmp/$addr.runtime.result
-    raw=`ping -c 1 -t $timeout $addr`
-    ret=$?
-    # result=`cat $ping_tmp/$addr.runtime.result|grep time|head -1`
+    touch $ping_tmp/$addr.runtime.log
+    if [ "$resolved" == "" ]; then 
+        raw=`ping -c 1 -t $timeout $addr`
+        ret=$?
+    else
+        raw=`ping -c 1 -t $timeout $resolved`
+        ret=$?
+    fi
+    # >&2 echo "[ping $addr/$resolved ret=$ret"
     result=`echo $raw|grep time|head -1`
-    # cfont "?" >> $ping_tmp/$addr
     cost=`echo $result| sed 's/.*time=\(.*\)/\1/g'`
-    echo $cost > /$ping_tmp/$addr.runtime.cost
-    # cat $ping_tmp/$addr | sed 's/.$//g' > $ping_tmp/$addr
+    echo $cost > $ping_tmp/$addr.runtime.cost
     case $ret in
         0 )
-            cfont -green "." >> $ping_tmp/$addr
+            cfont -green "." >> $ping_tmp/$addr.runtime.log
             ;;
         * )
-            cfont -red "x" >> $ping_tmp/$addr
+            cfont -red "x" >> $ping_tmp/$addr.runtime.log
             echo "----" > $ping_tmp/$addr.runtime.cost
             ;;
     esac
@@ -123,9 +137,13 @@ rotatec=$(($clen*1*$rotate))
 count=0
 function loop() {
     for addr in `ls $ping_tmp|grep -v runtime`; do
+        addr_str=$addr
+        addr_resolved=`cat $ping_tmp/$addr`
         len=`echo $addr | wc -c | awk '{print $1}'`
+        len=$(($len+`echo $addr_resolved|wc -c|awk '{print $1}'`))
         if [ $len -gt $fix ]; then fix=$(($len+4)); fi
-        ping_and_record $addr > /dev/null &
+        # echo "ping and record $addr, resolved= $addr_resolved"
+        ping_and_record $addr $addr_resolved > /dev/null 2>&1 &
         count=$(($count+1))
     done
     
@@ -134,10 +152,15 @@ function loop() {
 
 
     for addr in `ls $ping_tmp|grep -v runtime`; do
-        cfont "`str_fix $fix $addr` "
+        addr_str=$addr
+        addr_resolved=`cat $ping_tmp/$addr`
+        if [ "$addr_resolved" != "" ]; then
+            addr_str="$addr ($addr_resolved)"
+        fi
+        cfont "`str_fix $fix $addr_str` "
         cost=`cat $ping_tmp/$addr.runtime.cost`
         cfont "[" -yellow `str_fix 12 $cost` -reset "] : "
-        stat=`cat $ping_tmp/$addr | tail -c $rotatec`
+        stat=`cat $ping_tmp/$addr.runtime.log | tail -c $rotatec`
         cfont $stat
         xcount=`grep -o 'x' <<< $stat | wc -l|awk '{print $1}'`
         ctotal=`echo -n $stat|wc -c`
