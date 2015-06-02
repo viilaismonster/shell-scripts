@@ -10,6 +10,8 @@ timeout=3
 fix=10
 rotate=30
 
+args=$@
+
 function clear_tmp() {
     rm -Rf $ping_tmp$1
     mkdir $ping_tmp$1
@@ -79,9 +81,11 @@ fi
 function ping_and_record() {
     addr=$1
     touch $ping_tmp/$addr.runtime.cost
-    ping -c 1 -t $timeout $addr > /$ping_tmp/$addr.runtime.result
+    # ping -c 1 -t $timeout $addr > /$ping_tmp/$addr.runtime.result
+    raw=`ping -c 1 -t $timeout $addr`
     ret=$?
-    result=`cat $ping_tmp/$addr.runtime.result|grep time|head -1`
+    # result=`cat $ping_tmp/$addr.runtime.result|grep time|head -1`
+    result=`echo $raw|grep time|head -1`
     # cfont "?" >> $ping_tmp/$addr
     cost=`echo $result| sed 's/.*time=\(.*\)/\1/g'`
     echo $cost > /$ping_tmp/$addr.runtime.cost
@@ -116,11 +120,13 @@ fi
 rotatec=$(($clen*1*$rotate))
 # echo "rotatec = $rotatec"; exit
 
+count=0
 function loop() {
     for addr in `ls $ping_tmp|grep -v runtime`; do
         len=`echo $addr | wc -c | awk '{print $1}'`
         if [ $len -gt $fix ]; then fix=$(($len+4)); fi
         ping_and_record $addr > /dev/null &
+        count=$(($count+1))
     done
     
     clear
@@ -142,6 +148,8 @@ function loop() {
         cfont -reset
         cfont -n
     done
+
+    echo "... $count / `jobs -p|wc -l|awk '{print $1}'`"
 
     sleep $timeout
 }
