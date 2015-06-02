@@ -88,16 +88,35 @@ if [ ! -d $ping_tmp ]; then
     cfont -red "$ping_tmp not found" -n -reset
 fi
 
+function platform_ping {
+    addr=$1
+    timeout=$2
+    case "`uname`" in
+        "Darwin" )
+            ping -c 1 -t $timeout $addr
+            return $?
+        ;;
+        "Linux" )
+            ping -c 1 -W $timeout $addr
+            return $?
+        ;;
+        * )
+            >&2 echo "unknown platform"
+            return 1
+        ;;
+    esac
+}
+
 function ping_and_record() {
     addr=$1
     resolved=$2
     touch $ping_tmp/$addr.runtime.cost
     touch $ping_tmp/$addr.runtime.log
     if [ "$resolved" == "" ]; then 
-        raw=`ping -c 1 -t $timeout $addr`
+        raw=`platform_ping $addr $timeout`
         ret=$?
     else
-        raw=`ping -c 1 -t $timeout $resolved`
+        raw=`platform_ping $resoloved $timeout`
         ret=$?
     fi
     # >&2 echo "[ping $addr/$resolved ret=$ret"
