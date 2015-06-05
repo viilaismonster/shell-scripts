@@ -35,6 +35,10 @@ function maven_deploy {
     maven_run deploy $@
     return $? 
 }
+function maven_package { 
+    maven_run package $@
+    return $? 
+}
 
 function maven_enter_folder_print { 
     enter_folder_run maven_print "@" $@
@@ -77,7 +81,7 @@ function mvn_multi {
     cmd=$1
     shift
     case $cmd in
-        'clean' | 'compile' | 'install' | 'deploy' )
+        'clean' | 'compile' | 'install' | 'deploy' | 'package' )
             loop_folder is_maven_folder maven_$cmd $@
         ;;
         'p' | 'print' )
