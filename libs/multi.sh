@@ -1,5 +1,5 @@
 multi_cmd_status=
-multi_tmp_err=/tmp/git_multi_err
+multi_tmp_err=/tmp/multi_err
 
 function folder_or_not_exist() {
     if [ ! -e $1 ]; then
@@ -45,19 +45,27 @@ function loop_folder() {
             continue
         fi
         cfont "`multi_cmd_brief $cmd` >" -yellow " `str_fix 36 $folder` \t." -reset "..."
+        ret=
+        trap "ret=3" INT
         if [ "$multi_cmd_status" != "" ]; then
             status=`enter_folder_run "$multi_cmd_status" $cmd $folder`
         else
             status=
         fi
-        $cmd $folder 1>$ERR 2>&1
-        # $cmd $folder
-        case $? in
+        if [ "$ret" == "" ]; then
+            $cmd $folder 1>$ERR 2>&1
+            ret=$?
+            # $cmd $folder
+        fi
+        case $ret in
             0 )
                 cfont -green " [ok]" -dim " $status" -reset -n
             ;;
             2 )
                 cfont -dim " [ignore]" -reset -n
+            ;;
+            3 )
+                cfont -dim " [cancel]" -reset -n
             ;;
             1 | *)
                 cfont -red " [error]" -reset -n
@@ -73,10 +81,13 @@ function enter_folder_run() {
     if [ ! -d $3 ]; then
         return 1
     fi
+    trap_return=
+    trap "trap_return=3" INT
     # echo "enter folder $3 run $1 with args $2"
     cd $3
     $1 $2
     ret=$?
     cd - > /dev/null
+    if [ "$trap_return" != "" ]; then return $trap_return; fi
     return $ret
 }

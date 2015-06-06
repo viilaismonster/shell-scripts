@@ -1,10 +1,13 @@
 #!/bin/bash
 ROOT=~/tool/shell-scripts
 . $ROOT/libs/common.sh
-ERR=/tmp/git_multi_err
+
 COMMENT=/tmp/git_multi_comment
 XGIT=$ROOT/git.smart.sh
 fast_mode=1
+
+import multi
+multi_tmp_err=/tmp/git_multi_err
 
 function is_git_folder() {
     if [ ! -d $1 ]; then
@@ -16,59 +19,6 @@ function is_git_folder() {
     return 0
 }
 
-function folder_or_not_exist() {
-    if [ ! -e $1 ]; then
-        return 0
-    fi
-    if [ -d $1 ]; then
-        return 0
-    fi
-    return 1
-}
-
-function str_fix() {
-    len=$1
-    shift
-    str=$1
-    str+=" _________________________________________________"
-    echo "${str:0:$len}"
-}
-
-function loop_folder() {
-    folder_test=$1; shift
-    cmd=$1; shift
-    cfont "foreach " -green "$# " -reset
-    cfont "filter " -green "@$folder_test " -reset 
-    cfont "run " -green "$cmd" -reset -n
-    echo
-    while test $# -gt 0; do
-        folder=$1
-        shift
-        $folder_test $folder
-        if [ $? -ne 0 ]; then
-            continue
-        fi
-        cfont "`cmd_brief $cmd` >" -yellow " `str_fix 36 $folder` \t." -reset "..."
-        status=`enter_folder_run 'cmd_status' $cmd $folder`
-        $cmd $folder 1>$ERR 2>&1
-        # $cmd $folder
-        case $? in
-            0 )
-                cfont -green " [ok]" -dim " $status" -reset -n
-            ;;
-            2 )
-                cfont -dim " [ignore]" -reset -n
-            ;;
-            1 | *)
-                cfont -red " [error]" -reset -n
-                cat $ERR
-                cfont -n
-            ;;
-        esac
-    done
-    echo
-}
-
 function clone() {
     is_git_folder $2
     if [ $? -eq 0 ]; then
@@ -78,6 +28,7 @@ function clone() {
     return $?
 }
 
+multi_cmd_status=cmd_status
 function cmd_status() {
     # echo "run cmd_status for $1 in `pwd`"
     case $1 in
@@ -91,10 +42,11 @@ function cmd_status() {
             echo `get_unstaged` "changes"
         ;;
         'enter_folder_git_xpull' )
+            remotes_count=0
             remotes_count=`$XGIT remotes|wc -l|awk '{print $1}'`
             if [ $remotes_count -gt 1 ]; then
                 git remote update origin >/dev/null 2>&1
-            else
+            else [ $remotes_count -eq 1 ]; then
                 git remote update >/dev/null 2>&1
             fi
             git status --porcelain --branch
@@ -125,21 +77,13 @@ function cmd_brief() {
     esac
 }
 
-function enter_folder_run() {
-    if [ ! -d $3 ]; then
-        return 1
-    fi
-    # echo "enter folder $3 run $1 with args $2"
-    cd $3
-    $1 $2
-    ret=$?
-    cd - > /dev/null
-    return $ret
-}
-
 function enter_folder_git() {
+    # trap_return=
+    # trap "trap_return=3" INT
     enter_folder_run $XGIT $@
-    return $?
+    ret=$?
+    # if [ "$trap_return" != "" ]; then return $trap_return; fi
+    return $ret
 }
 
 function enter_folder_git_xpush() { 
