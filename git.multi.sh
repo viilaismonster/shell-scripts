@@ -46,7 +46,7 @@ function cmd_status() {
             remotes_count=`$XGIT remotes|wc -l|awk '{print $1}'`
             if [ $remotes_count -gt 1 ]; then
                 git remote update origin >/dev/null 2>&1
-            else [ $remotes_count -eq 1 ]; then
+            elif [ $remotes_count -eq 1 ]; then
                 git remote update >/dev/null 2>&1
             fi
             git status --porcelain --branch
