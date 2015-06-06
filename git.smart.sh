@@ -105,7 +105,7 @@ case $1 in
     'checkout' )
         test_if_repo
         if [ "$2" == "." ] || [ "$2" == "" ] || [ "$2" == "./" ]; then
-            cfont "using" -red " 'git checkout .'" -reset " is very dangerous, please use " -green "'$GIT_BIN checkout .'" -reset " if confirned"
+            cfont "using" -red " 'git checkout .'" -reset " is very dangerous, please use " -green "'$GIT_BIN checkout .'" -reset " if confirmed" -n
             exit 1
         fi
     ;;
