@@ -41,7 +41,7 @@ function cmd_status() {
         'enter_folder_commit' )
             echo `get_unstaged` "changes"
         ;;
-        'enter_folder_git_xpull' )
+        'enter_folder_git_xpull' | 'enter_folder_git_show' )
             remotes_count=0
             remotes_count=`$XGIT remotes|wc -l|awk '{print $1}'`
             if [ $remotes_count -gt 1 ]; then
@@ -108,6 +108,9 @@ function enter_folder_git_xpull() {
     enter_folder_git xpull $@ 
     return $?
 }
+function enter_folder_git_show() { 
+    return 0
+}
 
 function enter_folder_commit() {
     cd $1
@@ -127,7 +130,7 @@ function get_unstaged() {
 cmd=$1
 shift
 case $cmd in
-    'xpush' | 'upush' | 'xpull' )
+    'xpush' | 'upush' | 'xpull' | 'show' )
         loop_folder is_git_folder "enter_folder_git_$cmd" $@
     ;;
     'commit' )
