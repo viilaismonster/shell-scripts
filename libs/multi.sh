@@ -48,9 +48,9 @@ function loop_folder() {
         ret=
         trap "ret=3" INT
         if [ "$multi_cmd_status" != "" ]; then
-            status=`enter_folder_run "$multi_cmd_status" $cmd $folder`
+            status_str=`enter_folder_run "$multi_cmd_status" $cmd $folder`
         else
-            status=
+            status_str=
         fi
         if [ "$ret" == "" ]; then
             $cmd $folder 1>$ERR 2>&1
@@ -59,7 +59,7 @@ function loop_folder() {
         fi
         case $ret in
             0 )
-                cfont -green " [ok]" -dim " $status" -reset -n
+                cfont -green " [ok]" -dim " $status_str" -reset -n
             ;;
             2 )
                 cfont -dim " [ignore]" -reset -n
