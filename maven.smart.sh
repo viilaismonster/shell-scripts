@@ -46,16 +46,15 @@ function maven_enter_folder_print {
 }
 multi_cmd_status=maven_print
 function maven_print {
-    # <groupId>com.instanza.voip</groupId>
-    # <artifactId>speedyturn-agent</artifactId>
-    # <version>1.0-SNAPSHOT</version>
     groupId=?
     artifactId=?
     version=?
     r1='<groupId>(.*)</groupId>.*'
     r2='<artifactId>(.*)</artifactId>.*'
     r3='<version>(.*)</version>.*'
+    rdependencies='<dependencies>'
     rparent='<parent>'
+    rend='</project>'
     count=`cat pom.xml | grep '<groupId\|<artifactId\|<version'|wc -l|awk '{print $1}'`
     if [ $count -eq 0 ]; then
         echo '?'
@@ -64,17 +63,20 @@ function maven_print {
     if [ $count -gt 3 ]; then
         count=3
     fi
-    cat pom.xml | grep '<groupId\|<artifactId\|<version\|<parent' | while read line; do
+    cat pom.xml | grep '<groupId\|<artifactId\|<version\|<parent\|<dependencies\|</project>' | while read line; do
         [[ "$line" =~ $rparent ]] && count=$(($count+3))
         [[ "$line" =~ $r1 ]] && groupId=${BASH_REMATCH[1]} && count=$(($count-1))
         [[ "$line" =~ $r2 ]] && artifactId=${BASH_REMATCH[1]} && count=$(($count-1))
         [[ "$line" =~ $r3 ]] && version=${BASH_REMATCH[1]} && count=$(($count-1))
-        # echo $count"  "$line
+        # >&2 echo $count" $artifactId "$line
+        [[ "$line" =~ $rdependencies ]] && count=0
+        [[ "$line" =~ $rend ]] && count=0
         if [ $count -eq 0 ]; then
             echo [$groupId:$artifactId:$version]
             return
         fi
-    done 
+    done
+
 }
 
 function mvn_multi {
