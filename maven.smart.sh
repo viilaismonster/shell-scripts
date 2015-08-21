@@ -5,9 +5,25 @@ ROOT=~/tool/shell-scripts
 
 import multi
 
+flag=~/.maven.smart.flags
+flag_notest="-Dmaven.test.skip=true"
 fast_mode=1
 MVN_BIN=/usr/local/bin/mvn
 multi_cmd_status=maven_print
+
+touch $flag
+function mvn_bin {
+    flag_on=
+    cat $flag|grep "^on maven.test.skip" && flag_on="$flag_on $flag_notest"
+    $MVN_BIN $flag_on $@
+}
+
+function verify_fname {
+    case "$1" in
+        maven.test.skip ) ;;
+        * ) cfont "unknown mavne flag" -red $1 -reset -n ;
+    esac
+}
 
 function is_maven_folder {
     test -d $1 && test -f $1/pom.xml
@@ -15,7 +31,7 @@ function is_maven_folder {
 }
 
 function maven_run {
-    enter_folder_run $MVN_BIN $@
+    enter_folder_run mvn_bin $@
 }
 
 function maven_clean {
@@ -104,8 +120,38 @@ case "$1" in
         shift
         mvn_multi $@ *
     ;;
+    "flag" | "flags" )
+        shift
+        if [ $# -eq 1 ]; then
+            verify_fname $1
+            cat $flag | grep $1
+        elif [ $# -eq 2 ]; then
+            fname=$1
+            verify_fname $fname
+            shift
+            case $1 in
+                off ) 
+                    cat $flag|grep -v "^on $fname" > $flag 
+                    cfont -red "disable" -reset "mvn flag" -yellow "$fname" -reset -n
+                    ;;
+                on ) 
+                    cat $flag|grep -v $fname > $flag; echo "on $fname" >> $flag
+                    cfont -green "enable" -reset "mvn flag" -yellow "$fname" -reset -n
+                    ;;
+                * )
+                    cfont -red "unexpected flag option, neither on nor off" -reset -n 
+                    ;;
+            esac
+        else
+            if [ $# -ne 0 ]; then
+                cfont -yellow "mvn flag command" -red "need 0/1/2 args" -reset -n
+            fi
+            cat $flag
+        fi
+    ;;
     * )
-        $MVN_BIN $@
+        mvn_bin $@
+        # $MVN_BIN $@
     ;;
 esac
 
