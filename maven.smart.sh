@@ -14,7 +14,7 @@ multi_cmd_status=maven_print
 touch $flag
 function mvn_bin {
     flag_on=
-    cat $flag|grep "^on maven.test.skip" && flag_on="$flag_on $flag_notest"
+    cat $flag | grep "^on maven.test.skip" > /dev/null && flag_on="$flag_on $flag_notest"
     $MVN_BIN $flag_on $@
 }
 
