@@ -88,6 +88,10 @@ function enter_folder_git() {
 
 function enter_folder_git_xpush() { 
     cd $1
+    if [ `git status --porcelain --branch|grep "\.\.\."|wc -l` -eq 0 ]; then
+        echo "upstream no found"
+        return 1
+    fi
     status=`git status --porcelain --branch|grep ahead|wc -l|awk '{print $1}'` > /dev/null
     ret=$?
     cd - > /dev/null
