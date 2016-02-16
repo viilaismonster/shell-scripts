@@ -39,7 +39,7 @@ function cmd_status() {
         #     echo `git log --oneline HEAD..origin | wc -l` "commits"
         # ;;
         'enter_folder_commit' )
-            echo `get_unstaged` "changes"
+            echo `get_unstaged` "files"
         ;;
         'enter_folder_git_xpull' | 'enter_folder_git_show' )
             remotes_count=0
