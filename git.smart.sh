@@ -64,10 +64,34 @@ case $1 in
         $GIT_MULTI $@
         exit 0
     ;;
+    'sync' )
+        branch
+        shift
+        upstream=upstream
+        if [ $# -eq 1 ]; then 
+            upstream=$1
+            shift
+        fi
+        if test `git remote|grep $upstream|wc -l` -eq 0; then
+            cfont -red "fetch remote [$upstream] no found" -reset -n
+            exit 1
+        fi
+        cfont -yellow "fetching upstream changes" -reset -n
+        git fetch $upstream
+        branch=$branch_name
+        echo
+        cfont -yellow "sync with local branch" -green $branch "<- /remotes/$upstream/$branch" -reset -n
+        git merge /remotes/$upstream/$branch
+        exit 0 
+    ;;
     'xpush' | 'upush' )
         # test_if_staged
         branch
         remotes|while read remote; do
+            if [ "$remote" == "upstream" ];then
+                cfont -dim "ignore upstream" -n -reset
+                continue
+            fi
             cfont -yellow
             cfont -reset
             push_arg=
