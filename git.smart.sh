@@ -80,8 +80,8 @@ case $1 in
         git fetch $upstream
         branch=$branch_name
         echo
-        cfont -yellow "sync with local branch" -green $branch "<- /remotes/$upstream/$branch" -reset -n
-        git merge /remotes/$upstream/$branch
+        cfont -yellow "sync with local branch" -green $branch "<- $upstream/$branch" -reset -n
+        git merge $upstream/$branch
         exit 0 
     ;;
     'xpush' | 'upush' )
