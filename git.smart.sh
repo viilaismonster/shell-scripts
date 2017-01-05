@@ -87,6 +87,7 @@ case $1 in
     'xpush' | 'upush' )
         # test_if_staged
         branch
+        shift
         remotes|while read remote; do
             if [ "$remote" == "upstream" ];then
                 cfont -dim "ignore upstream" -n -reset
@@ -97,6 +98,9 @@ case $1 in
             push_arg=
             if [ "$cmd" == "upush" -a "$remote" == "origin" ]; then
                 push_arg="-u"
+            fi
+            if [ $# -gt 0 ]; then
+                push_arg="$push_arg $@"
             fi
             echo "git push $push_arg $remote $branch_name..."
             git push $push_arg $remote $branch_name && pass=1
@@ -140,6 +144,10 @@ case $1 in
     'p' | 'print' | 'print_changed' | 'pc' )
         shift
         pwd=`pwd`
+        if [ -f .git ]; then
+            test_if_staged
+            exit 0
+        fi
         ls -l|grep ^d|awk '{print $9}'|while read name; do
             cd $pwd
             test ! -d $name && continue
@@ -161,6 +169,29 @@ case $1 in
             test $unstaged -gt 0 && cfont -red
             echo "$name ... "$unstaged
             cfont -reset
+        done
+        exit 0
+    ;;
+    'retag' )
+        test_if_staged
+        branch
+        shift
+        tag=$1
+        if [ "$tag" == "" ]; then
+            echo "usage $0 retag [tag_name]" && exit 1
+        fi
+        shift
+        $GIT_BIN fetch origin || exit 1
+        $GIT_BIN tag -d $tag
+        $GIT_BIN tag -a $tag -m "add tag/$tag"
+        remotes|while read remote; do
+            if [ "$remote" == "upstream" ];then
+                cfont -dim "ignore upstream" -n -reset
+                continue
+            fi
+            echo "git push $remote $tag -f..."
+            $GIT_BIN push $remote $tag -f && pass=1
+            test_if_pass "push tag/$tag to $remote" "when pushing tag/$tag to $remote"       
         done
         exit 0
     ;;
