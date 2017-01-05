@@ -144,7 +144,7 @@ case $1 in
     'p' | 'print' | 'print_changed' | 'pc' )
         shift
         pwd=`pwd`
-        if [ -f .git ]; then
+        if [ -d .git ]; then
             test_if_staged
             exit 0
         fi
