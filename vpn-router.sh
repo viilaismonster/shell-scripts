@@ -16,7 +16,7 @@ esac; shift; done
 [ "$vpnrouter" = "" ] && vpnrouter=10.255.$subnetid.1
 
 [ "`sudo whoami`" != "root" ] && exit
-route delete $subnet/24 >/dev/null 2>&1
+sudo route delete $subnet/24 >/dev/null 2>&1
 
 [ $reset -eq 1 ] && exit 0
 
@@ -25,7 +25,7 @@ for i in $(seq 0 9); do
     ifconfig $ppp >/dev/null 2>&1 || break
     # echo "checking $ppp, `ifconfig $ppp | grep $vpnrouter`"
     if ifconfig $ppp | grep $vpnrouter > /dev/null; then
-        route add $subnet/24 -ifp $ppp $vpnrouter >/dev/null 2>&1
+        sudo route add $subnet/24 -ifp $ppp $vpnrouter >/dev/null || exit 1
         echo "network $subnet/24 throuth $ppp($vpnrouter)"
         exit
     fi
