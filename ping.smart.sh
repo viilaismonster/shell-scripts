@@ -185,7 +185,7 @@ function loop() {
         ctotal=`echo -n $stat|wc -c`
         ctotal=$(($ctotal/$clen))
         if [ $xcount -gt 0 ]; then
-            cfont -dim " " $(($xcount*100/$ctotal)) '%'
+            cfont -yellow " " $(($xcount*100/$ctotal)) '%'
         fi
         cfont -reset
         cfont -n
