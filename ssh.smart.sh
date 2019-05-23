@@ -36,13 +36,13 @@ function do_bench() {
         fi
         if [ "$cost" == "err" ]; then
             cfont -red
-            cost="cost `timer_print` second"
+            cost="cost `timer_print_ms` ms"
             if [ `timer_print` -ge $do_bench_timeout ]; then
                 cost="$cost, timeout"
             fi
         else
             cfont -green
-            cost="cost `timer_print` second"
+            cost="cost `timer_print_ms` ms"
         fi
         echo " $cost"
         cfont -reset

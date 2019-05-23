@@ -6,9 +6,9 @@ ROOT=~/tool/shell-scripts
 fast_mode=1
 
 ping_tmp=/tmp/pings
-timeout=3
+timeout=1
 fix=10
-rotate=30
+rotate=50
 
 args=$@
 

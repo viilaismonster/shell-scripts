@@ -127,7 +127,9 @@ case $1 in
             exit 2
         fi
         git add . -A
-        git commit -a
+        wordcommit=commit
+        [ -d .git/svn ] && wordcommit=dcommit || :
+        git $wordcommit -a
         exit 0
     ;;
     'checkout' )
