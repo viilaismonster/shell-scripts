@@ -118,7 +118,7 @@ function enter_folder_git_show() {
 
 function enter_folder_commit() {
     cd $1
-    if [ "`get_unstaged`" == "0" ]; then
+    if [ "`get_unstaged`" == "0" ] || [ -d .git/svn ]; then
         cd -
         return 2
     fi

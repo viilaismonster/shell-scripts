@@ -126,10 +126,13 @@ case $1 in
         if [ "`get_unstaged`" == "0" ]; then
             exit 2
         fi
+        set -e
         git add . -A
-        wordcommit=commit
-        [ -d .git/svn ] && wordcommit=dcommit || :
-        git $wordcommit -a
+        git commit -a 
+        if [ -d .git/svn ]; then
+            git svn rebase
+            git svn dcommit 
+        fi
         exit 0
     ;;
     'checkout' )
@@ -150,19 +153,19 @@ case $1 in
             test_if_staged
             exit 0
         fi
-        ls -l|grep ^d|awk '{print $9}'|while read name; do
+        ls -l|grep "^\(d\|l\)"|awk '{print $9}'|while read name; do
             cd $pwd
-            test ! -d $name && continue
+            test ! -d $name/.git && continue
             test_in_list $name .gitignore && continue
             cd $pwd
             cd $name
             repo=0
             git status > /dev/null 2>&1 && repo=1
             test $repo -eq 0 && continue
-            # echo "checking folder $name" && continue
+            # echo "checking folder $name `get_unstaged`" && continue
             # get_unstaged && continue
             unstaged=`get_unstaged`
-            cfont -dim
+            cfont -gray
             if [ "$cmd" == "print_changed" -o "$cmd" == "pc" ]; then
                  if [ $unstaged -eq 0 ]; then
                     continue
