@@ -98,7 +98,7 @@ function enter_folder_git_xpush() {
     if [ $ret -ne 0 ]; then
         return 1
     fi
-    if [ "$status" == "0" ]; then
+    if [ "$status" == "0" ] && [ $(git remote | wc -l) -eq 1 ]; then
         return 2
     fi
     enter_folder_git xpush $@ 

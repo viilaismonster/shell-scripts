@@ -129,7 +129,7 @@ case $1 in
         set -e
         git add . -A
         git commit -a 
-        if [ -d .git/svn ]; then
+        if [ "$(ls .git/svn 2>/dev/null)" != "" ]; then
             git svn rebase
             git svn dcommit 
         fi
