@@ -209,7 +209,9 @@ case $1 in
     ;;
     'rtag' )
         test_if_staged
-        $GIT_BIN tag `echo r$(date +%Y%m%d%H%M%S)`
+        rtag=`echo r$(date +%Y%m%d%H%M%S)`
+        $GIT_BIN tag $rtag
+        echo $rtag
         exit 0
     ;;
 esac
