@@ -84,7 +84,7 @@ case $1 in
         git merge $upstream/$branch
         exit 0 
     ;;
-    'xpush' | 'upush' )
+    'xpush' | 'upush' | 'tpush' )
         # test_if_staged
         branch
         shift
@@ -98,6 +98,9 @@ case $1 in
             push_arg=
             if [ "$cmd" == "upush" -a "$remote" == "origin" ]; then
                 push_arg="-u"
+            fi
+            if [ "$cmd" == "tpush" ]; then
+                push_arg="$push_arg --tags"
             fi
             if [ $# -gt 0 ]; then
                 push_arg="$push_arg $@"
@@ -202,6 +205,11 @@ case $1 in
     ;;
     'l' )
         $GIT_BIN log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --
+        exit 0
+    ;;
+    'rtag' )
+        test_if_staged
+        $GIT_BIN tag `echo r$(date +%Y%m%d%H%M%S)`
         exit 0
     ;;
 esac
