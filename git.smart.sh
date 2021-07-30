@@ -214,6 +214,13 @@ case $1 in
         echo $rtag
         exit 0
     ;;
+    'btag' )
+        test_if_staged
+        rtag=`echo b$(date +%Y%m%d%H%M%S)`
+        $GIT_BIN tag $rtag
+        echo $rtag
+        exit 0
+    ;;
 esac
 
 $GIT_BIN "$@"

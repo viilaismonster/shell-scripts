@@ -63,8 +63,7 @@ update_pid
 
 if [ "$pid" == "" ];then
     echo -n "[$remote] :$port starting dproxy ... "
-    # >&2 echo "nohup $ssh -D $port $remote > /dev/null" 
-    nohup $ssh -D $port $remote > /dev/null || on_error
+    nohup $ssh -D $port $remote >/dev/null 2>&1 || on_error
     sleep .2
     echo " started"
 else
