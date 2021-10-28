@@ -55,8 +55,10 @@ cmd=$1
 case $1 in
     'all' )
         shift
+        subcmd=$1
+        shift
         # cfont "run" -yellow " $GIT_MULTI $@" -reset
-        $GIT_MULTI $@ *
+        $GIT_MULTI $subcmd * $@
         exit 0
     ;;
     'each' )
@@ -221,6 +223,14 @@ case $1 in
         echo $rtag
         exit 0
     ;;
+    'stat' )
+        shift
+        # repo=$(basename $PWD)
+        # echo "> $@"
+        repo=$(basename $PWD)
+        branch=$(git branch -a|grep '^*'|awk '{print $2}')
+        $GIT_BIN log "$@" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2 } END { printf "'$branch'\t+%s / -%s / total %s\n", add, subs, loc }' -
+        exit 99
 esac
 
 $GIT_BIN "$@"

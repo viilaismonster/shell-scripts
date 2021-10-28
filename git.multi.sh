@@ -51,6 +51,9 @@ function cmd_status() {
             fi
             git status --porcelain --branch
         ;;
+        'enter_folder_git_stat' )
+            echo "."
+        ;;
         * )
             git status --porcelain --branch
         ;;
@@ -70,6 +73,9 @@ function cmd_brief() {
         ;;
         'enter_folder_commit' )
             echo 'commit'
+        ;;
+        'enter_folder_git_stat' )
+            echo 'stat'
         ;;
         * )
             echo $1
@@ -115,6 +121,10 @@ function enter_folder_git_xpull() {
 function enter_folder_git_show() { 
     return 0
 }
+function enter_folder_git_stat() {
+    enter_folder_git stat $@ $cmd_args
+    return $?
+}
 
 function enter_folder_commit() {
     cd $1
@@ -132,9 +142,19 @@ function get_unstaged() {
 }
 
 cmd=$1
+cmd_args=
 shift
+
+function extract_args {
+    while test $# -gt 0; do case $1 in
+        - ) shift; cmd_args="$@";; 
+    esac; shift; done
+}
+
+extract_args "$@"
+
 case $cmd in
-    'xpush' | 'upush' | 'xpull' | 'show' )
+    'xpush' | 'upush' | 'xpull' | 'show' | 'stat' )
         loop_folder is_git_folder "enter_folder_git_$cmd" $@
     ;;
     'commit' )

@@ -33,11 +33,12 @@ function loop_folder() {
     ERR=$multi_tmp_err
     folder_test=$1; shift
     cmd=$1; shift
-    cfont "foreach " -green "$# " -reset
-    cfont "filter " -green "@$folder_test " -reset
-    cfont "run " -green "$cmd" -reset -n
+    # cfont "foreach " -green "$# " -reset
+    cfont "when" -green "@$folder_test " -reset
+    cfont "run" -green "$cmd" -reset -n
     echo
     while test $# -gt 0; do
+        [ "$1" != "-" ] || break
         folder=$1
         shift
         $folder_test $folder
@@ -59,7 +60,7 @@ function loop_folder() {
         fi
         case $ret in
             0 )
-                cfont -green " [ok]" -dim " $status_str" -reset -n
+                cfont -green " [ok]" -gray " $status_str" -reset -n
             ;;
             2 )
                 cfont -dim " [ignore]" -reset -n
@@ -67,8 +68,13 @@ function loop_folder() {
             3 )
                 cfont -dim " [cancel]" -reset -n
             ;;
+            99 )
+                cfont -white " [output]" -reset -n
+                cat $ERR
+                cfont -n
+            ;;
             1 | *)
-                cfont -red " [error]" -reset -n
+                cfont -red " [error $ret]" -reset -n
                 cat $ERR
                 cfont -n
             ;;
@@ -85,7 +91,9 @@ function enter_folder_run() {
     trap "trap_return=3" INT
     # echo "enter folder $3 run $1 with args $2"
     cd $3
-    $1 $2
+    arg12="$1 $2"
+    shift; shift; shift;
+    $arg12 $@
     ret=$?
     cd - > /dev/null
     if [ "$trap_return" != "" ]; then return $trap_return; fi
