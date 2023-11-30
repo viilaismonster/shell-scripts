@@ -149,6 +149,10 @@ case "$1" in
             cat $flag
         fi
     ;;
+    version | v )
+        shift
+        mvn versions:set -DnewVersion=$1 && mvn versions:commit
+    ;;
     * )
         mvn_bin $@
         # $MVN_BIN $@

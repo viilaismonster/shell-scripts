@@ -27,7 +27,7 @@ while [ $# -gt 0 ]; do
             shift
             ping_tmp=$1
         ;;
-        --timeout )
+        --timeout | -i )
             shift
             timeout=$1
         ;;
@@ -93,7 +93,7 @@ function platform_ping {
     timeout=$2
     case "`uname`" in
         "Darwin" )
-            ping -c 1 -t $timeout $addr
+            ping -c 5 -i $timeout $addr
             return $?
         ;;
         "Linux" )

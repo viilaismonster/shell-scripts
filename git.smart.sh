@@ -216,6 +216,13 @@ case $1 in
         echo $rtag
         exit 0
     ;;
+    'rtag2' )
+        test_if_staged
+        rtag=`echo r-$(date +%Y%m%d%H%M%S)`
+        $GIT_BIN tag $rtag
+        echo $rtag
+        exit 0
+    ;;
     'btag' )
         test_if_staged
         rtag=`echo b$(date +%Y%m%d%H%M%S)`
@@ -230,6 +237,16 @@ case $1 in
         repo=$(basename $PWD)
         branch=$(git branch -a|grep '^*'|awk '{print $2}')
         $GIT_BIN log "$@" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2 } END { printf "'$branch'\t+%s / -%s / total %s\n", add, subs, loc }' -
+        exts=
+        [ -f "pom.xml" ] && exts="java" 
+        [ -f "package.json" ] && exts="js ts css scss html" 
+        for ext in $exts; do 
+            files=$(find . "(" -name "*.$ext" ")" -print | wc -l)
+            bytes=$(find . "(" -name "*.$ext" ")" -print |xargs wc -c | awk '{sum+=$1;} END{print sum;}')
+            sum=$(find . "(" -name "*.$ext" ")" -print |xargs wc -l | awk '{sum+=$1;} END{print sum;}')
+            [ $files -eq 0 ] && continue
+            echo -e ".$ext\t$files files, $sum lines, $bytes bytes."
+        done
         exit 99
 esac
 

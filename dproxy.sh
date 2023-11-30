@@ -10,6 +10,7 @@ test_domain=
 retry=0
 autoagent=0
 identity=
+testing=
 
 shift; shift
 while test $# -gt -0; do case $1 in
@@ -17,15 +18,21 @@ while test $# -gt -0; do case $1 in
     --test-domain ) shift; test_domain=$1;;
     --ssh-agent ) autoagent=1;;
     --ssh-identity ) shift; identity=$1;;
+    --no-testing ) testing=NONE;;
     - ) shift; testing=$@; break;;
+    * ) >&2 echo "unknown arguments $@"
+        exit 1;;
 esac; shift; done
-testing=$@
+
 if [ "$testing" = "" ]; then
     google=www.google.com
     [[ "$remote" =~ (bj|cn|ali) ]] && google=www.baidu.com
     [ "$test_domain" != "" ] && google=$test_domain
     testing="curl -s --socks5-hostname localhost:$port -k -I -o /dev/null -w %{http_code} https://$google"
+elif [ "$testing" = "NONE" ]; then
+    testing=
 fi
+
 # >&2 echo "testing = $testing"
 
 if [ "$port" = "" ] || [ "$remote" = "" ]; then
@@ -57,6 +64,7 @@ function on_error {
 pid=
 function update_pid {
     pid=`ps aux|grep ssh|grep $port|grep -v grep|grep -v dproxy.sh|awk '{print $2}'| xargs echo -n ' '`
+    [ "$pid" = "" ] && pid=`lsof -i:$port |grep LISTEN |grep ssh | awk '{print $2}' | sort | uniq`
     pid=`echo $pid`
 }
 update_pid
